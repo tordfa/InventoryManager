@@ -1,0 +1,45 @@
+﻿@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Services
+@inject IDataClient client
+
+<style>
+    .history_component{
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+
+        border-radius: 2em;
+        background-color:#C7C7C7;
+        height: 20em;
+        width: 30em;
+    }
+        .history_component li{
+            list-style: square;
+            margin-top: 1.5em;
+    }
+</style>
+
+<div class="history_component">
+
+    <h3>Dashboard History</h3>
+    <ul>
+
+        @for (var i = HistoryList.Count - 1; i > 0; i--)
+        {
+            <li class="history_item">@HistoryList[i].history</li>
+        }
+    </ul>
+</div>
+
+
+@code {
+    List<HistoryModel> HistoryList = new List<HistoryModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        HistoryList = await client.GetHistoryList();
+
+    }
+
+}
+

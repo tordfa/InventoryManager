@@ -1,0 +1,84 @@
+﻿@using BlazorApp1.Client.Authentication
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+<style>
+    .nav_top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 3.5em;
+        background-color: #070917;
+        color: white;
+    }
+
+    .inventory_sidebar {
+        background-color: #0A0E22;
+    }
+
+    .inventory_nav {
+        background-color: white;
+    }
+
+    .logout_button {
+        color: white;
+        border-radius: 1em;
+        background-color: #070917;
+    }
+
+        .logout_button:hover {
+            background-color: grey;
+        }
+</style>
+<div class="inventory_sidebar">
+    <div class="nav_top">
+        <h1>IM</h1>
+    </div>
+
+    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+        <nav class="flex-column">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Dashboard
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="itemlist">
+                    <span class="oi oi-box" aria-hidden="true"></span> Items
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="historypage">
+                    <span class="oi oi-clock" aria-hidden="true"></span> History
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="tagpage">
+                    <span class="oi oi-clock" aria-hidden="true"></span> Tags
+                </NavLink>
+            </div>
+        </nav>
+        <div class="d-flex justify-content-center mt-4">
+            <button @onclick="Logout" class="logout_button">Logout</button>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        navManager.NavigateTo("/", true);
+    }
+}

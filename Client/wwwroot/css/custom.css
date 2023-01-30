@@ -1,0 +1,28 @@
+﻿body {
+}
+
+
+.folder{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.folderbody {
+    display:flex;
+}
+.folder_title {
+    display:flex;
+    align-items: center;
+}
+
+.foldercontrol{
+    display:flex;
+
+}
+
+.folderchildren {
+    margin-left: 20px;
+}
+
+

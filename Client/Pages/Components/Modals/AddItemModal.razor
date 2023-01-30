@@ -1,0 +1,39 @@
+﻿
+@using BlazorApp1.Shared.Models
+@inject HttpClient Http
+<div class="modal" style="display:block" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add new Item:</h5>
+                <button @onclick="InvokeToggleModal" type="button" class="close" data-dismiss="modal" aria-label="Close" >
+                    <span aria-hidden="false">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="inputItemName" class="form-label">Item name:</label>
+                        <input type="text" class="form-control" id="inputItemName" aria-describedby="inputItemName" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" >Add item</button>
+                <button @onclick="InvokeToggleModal" type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Item newItem = new Item();
+    [Parameter] public Action toggleModal { get; set; }
+
+    private void InvokeToggleModal()
+    {
+        toggleModal?.Invoke();
+    }
+
+
+}

@@ -1,0 +1,70 @@
+﻿@using BlazorApp1.Shared.Models
+
+<style>
+    .list_item {
+        background-color: #fff;
+        border-radius: 30px;
+        height: 200px;
+        margin-top: 1em;
+        margin-right: 2em;
+    }
+    .list_item:hover{
+        cursor: pointer;
+        background-color: #d6d4d4;
+    }
+
+    .item_img {
+        width: 200px;
+        height: 200px;
+        border-top-left-radius: 30px;
+        border-bottom-left-radius: 30px;
+    }
+
+    .item_body {
+        display: flex;
+    }
+
+    .item_information {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 3em;
+        width: calc(50% - 3em);
+        border-right: 2px dotted black;
+    }
+
+    .item_information_right {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 2em;
+    }
+
+    .item_serial {
+        color: rgb(165, 165, 165);
+        margin: 0;
+    }
+</style>
+
+<div class="list_item">
+    <div class="item_body">
+        <img class="item_img" src="@Item.ImgSrc" />
+        <div class="item_information">
+            <h1>@Item.Name</h1>
+            <p class="item_serial">@Item.SerialNumber</p>
+            <p>@Item.Description</p>
+            <p>@Item.Quantity | @Item.Price $</p>
+        </div>
+        <div class="item_information_right">
+            <p>Min level: <b>@Item.MinimumQuantity</b></p>
+            <p>Purchase date: <b>03/05/2015</b></p>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public Item Item { get; set; }
+
+}

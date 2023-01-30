@@ -1,0 +1,42 @@
+﻿
+@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Services
+@inject IAppStateService Appstate
+<div class="modal" style="display:block; color:black;" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add new folder:</h5>
+                <button @onclick="InvokeToggleModal" type="button" class="close" data-dismiss="modal" aria-label="Close" >
+                    <span aria-hidden="false">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="inputFolderName" class="form-label">Folder name:</label>
+                        <input @bind="FolderName" type="text" class="form-control" id="inputFodlerName" aria-describedby="InputfolderName" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button @onclick="()=>{Appstate.AddFolder(folder,FolderName);InvokeToggleModal();}" type="button" class="btn btn-primary" >Add folder</button>
+                <button @onclick="InvokeToggleModal" type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Item newItem = new Item();
+    private string FolderName = "";
+    [Parameter] public Action toggleModal { get; set; }
+    [Parameter] public Folder folder { get; set; }
+
+    private void InvokeToggleModal()
+    {
+        toggleModal?.Invoke();
+    }
+
+
+}

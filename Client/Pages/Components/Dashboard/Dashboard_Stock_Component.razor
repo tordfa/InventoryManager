@@ -1,0 +1,81 @@
+﻿@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Services
+@inject IDataClient client
+@inject IAppStateService Appstate
+@inject NavigationManager navmanager
+
+<style>
+    .stock_component {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-radius: 2em;
+        margin: 2em;
+        background-color: #C7C7C7;
+        height: 15em;
+        width: 25em;
+    }
+
+        .stock_component ul {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            align-items: center;
+            overflow-y: scroll;
+        }
+
+        .stock_component li {
+            list-style: none;
+            margin-top: 1em;
+        }
+
+        .stock_component li:hover {
+            list-style: none;
+            margin-top: 1em;
+            cursor: pointer;
+            background-color: grey;
+        }
+
+</style>
+
+<div class="stock_component">
+
+    <h3>Dashboard Stock Alerts</h3>
+    <ul>
+        @foreach (var item in ItemsOutOfStock)
+        {
+            <li @onclick="()=>{GoToItem(item);}"><b>@item.Name </b> is out of stock. Quantity: <b>@item.Quantity</b> . Min quantity: <b>@item.MinimumQuantity</b></li>
+        }
+    </ul>
+</div>
+
+
+@code {
+    public List<Item> ItemsOutOfStock = new List<Item>();
+    public List<Item> Items = new List<Item>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Change to appstate?
+        Items = await client.GetAllItems();
+
+        if (Items.Count > 0)
+        {
+            foreach (var item in Items)
+            {
+                if (item.Quantity < item.MinimumQuantity)
+                {
+                    ItemsOutOfStock.Add(item);
+                }
+            }
+        }
+
+
+    }
+
+    private void GoToItem(Item item)
+    {
+        navmanager.NavigateTo("/itemlist/"); 
+        Appstate.SetActiveItem(item, "");
+    }
+}

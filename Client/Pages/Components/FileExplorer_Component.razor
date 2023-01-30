@@ -1,0 +1,73 @@
+﻿@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Pages.Components
+@using BlazorApp1.Client.Services
+@inject IDataClient client
+@inject IAppStateService Appstate
+
+<style>
+    .fileexplorer {
+        background-color: #070917;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 25%;
+    }
+
+    .addFolderButton {
+        color: grey;
+    }
+
+        .addFolderButton:hover {
+            cursor: pointer;
+            color: white;
+        }
+</style>
+
+<div class="fileexplorer">
+    <div class="nav_top">
+        <svg @onclick="()=>{Appstate.AddRootFolder();}" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-plus-circle addFolderButton" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+        </svg>
+    </div>
+
+
+    @foreach (Folder folder in RootFolders)
+    {
+        <Folder_Component folder="folder" parentFolderPath=""></Folder_Component>
+    }
+
+</div>
+
+@code {
+
+    private List<Folder> RootFolders = new List<Folder>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Appstate.OnchangeFolder += () =>
+        {
+            RootFolders = new List<Folder>();
+            foreach (var folder in Appstate.AllFolders)
+            {
+                if (folder.ParentFolderId == "")
+                {
+                    RootFolders.Add(folder);
+                }
+
+            }
+            StateHasChanged();
+        };
+        await Appstate.GetAllFolders();
+        await Appstate.GetAllItems();
+        foreach (var folder in Appstate.AllFolders)
+        {
+            if (folder.ParentFolderId == "")
+            {
+                RootFolders.Add(folder);
+            }
+        }
+    }
+
+}

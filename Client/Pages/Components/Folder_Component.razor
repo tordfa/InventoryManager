@@ -1,0 +1,192 @@
+﻿@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Pages.Components.Modals
+@using BlazorApp1.Client.Services
+@inject IAppStateService Appstate
+@inject IDataClient client
+
+<style>
+    .folderbody {
+        cursor: pointer;
+        display: flex;
+    }
+
+        .folderbody:hover {
+            background-color: #0A0E22;
+        }
+
+    .folder_title {
+        width: 100%;
+    }
+
+    .foldercontrol {
+    }
+
+    .control_item {
+        color: grey;
+    }
+
+        .control_item:hover {
+            color: white;
+        }
+
+    .item {
+        display: flex;
+    }
+
+        .item:hover {
+            cursor: pointer;
+            background-color: #0A0E22;
+        }
+
+    .item_title {
+        width: 100%;
+    }
+
+    .icon_spacing {
+        margin-right: 0.5em;
+    }
+</style>
+@if (AddFolder)
+{
+    <AddFolderModal toggleModal="ToggleAddFolder" folder="folder"></AddFolderModal>
+}
+@if (AddItem)
+{
+    <AddItemModal toggleModal="ToggleAddItem"></AddItemModal>
+}
+
+<div class="folder">
+
+        @if (Appstate.ActiveFolder != null && Appstate.ActiveFolder.Id == folder.Id)
+        {
+            FolderStyle = "background-color: #0A0E22;";
+        }
+    
+    else { FolderStyle = ""; }
+    <div class="folderbody" style="@FolderStyle">
+        <div @onclick="()=>{ToggleFolder();Appstate.SetActiveFolder(folder);}" class="folder_title">
+            <span class="oi @OpenFolderStyle icon_spacing" aria-hidden="true"></span>
+            <span class="oi oi-folder icon_spacing" aria-hidden="true"></span>
+            @folder.Name
+        </div>
+        <div class="foldercontrol">
+            <svg @onclick="()=>{ToggleAddFolder();}" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-folder-plus icon_spacing control_item" viewBox="0 0 16 16">
+                <path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z" />
+                <path d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z" />
+            </svg>
+            <svg @onclick="()=>Appstate.AddChildItem(folder)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-plus icon_spacing control_item" viewBox="0 0 16 16">
+                <path d="M8.5 6a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V10a.5.5 0 0 0 1 0V8.5H10a.5.5 0 0 0 0-1H8.5V6z" />
+                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
+            </svg>
+            <svg @onclick="()=>Appstate.DeleteFolder(folder)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3 control_item" viewBox="0 0 16 16">
+                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+            </svg>
+        </div>
+
+    </div>
+    <div class="folderchildren">
+        @if (isExpanded)
+        {
+            @if (childFolders.Count > 0)
+            {
+                @foreach (Folder childFolder in childFolders)
+                {
+                    <Folder_Component folder="childFolder" parentFolderPath="@folderPath"></Folder_Component>
+                }
+            }
+
+            <div class="folderitems">
+                @if (childItems.Count > 0)
+                {
+                    @foreach (var item in childItems)
+                    {
+                       
+                            @if (Appstate.ActiveItem != null && Appstate.ActiveItem.Id == item.Id)
+                            {
+                                ItemStyle = "background-color: #0A0E22;";
+                            }
+                        
+                        else { ItemStyle = "color:white"; }
+                        <div class="item" style="@ItemStyle">
+
+                            <div class="item_title" @onclick="()=>Appstate.SetActiveItem(item,folderPath)">
+                                <span class="oi oi-browser icon_spacing" aria-hidden="true"></span>
+                                @item.Name
+                            </div>
+                            <svg @onclick="()=>Appstate.DeleteItem(item)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3 control_item" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                        </div>
+
+                    }
+                }
+            </div>
+        }
+    </div>
+</div>
+@code {
+
+    [Parameter]
+    public Folder folder { get; set; }
+    [Parameter]
+    public string parentFolderPath { get; set; }
+
+    public List<Folder> childFolders { get; set; }
+    public List<Item> childItems { get; set; }
+
+
+    private string? folderPath;
+
+    public bool isExpanded { get; set; } = false;
+    public bool AddItem { get; set; } = false;
+    public bool AddFolder { get; set; } = false;
+    private string ItemStyle = "color:black";
+    private string FolderStyle = "color:black";
+    private string OpenFolderStyle = "oi-chevron-right";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Appstate.OnchangeItem += () =>
+        {
+            childItems = Appstate.GetChildItems(folder.Id);
+            StateHasChanged();
+        };
+        Appstate.OnchangeFolder += () =>
+        {
+            childFolders = Appstate.GetChildFolders(folder.Id);
+            StateHasChanged();
+        };
+        if (Appstate.openFolders.ContainsKey(folder.Id))
+        {
+            isExpanded = Appstate.openFolders[folder.Id];
+        }
+        else { Appstate.openFolders.Add(folder.Id, false); }
+
+        childFolders = Appstate.GetChildFolders(folder.Id);
+        childItems = Appstate.GetChildItems(folder.Id);
+
+        folderPath = parentFolderPath + " > " + folder.Name;
+
+    }
+
+    private void ToggleFolder()
+    {
+        isExpanded = !isExpanded;
+        if (isExpanded) { OpenFolderStyle = "oi-chevron-bottom"; }
+        else { OpenFolderStyle = "oi-chevron-right"; }
+        Appstate.openFolders[folder.Id] = isExpanded;
+    }
+
+    private void ToggleAddFolder()
+    {
+        AddFolder = !AddFolder;
+        StateHasChanged();
+    }
+
+    private void ToggleAddItem()
+    {
+        AddItem = !AddItem;
+        StateHasChanged();
+    }
+
+}

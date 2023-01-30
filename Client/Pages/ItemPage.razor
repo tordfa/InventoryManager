@@ -1,0 +1,124 @@
+﻿@page "/itemlist"
+@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Services
+@using BlazorApp1.Client.Pages.Components
+@inject HttpClient Http
+@inject IAppStateService Appstate
+@inject IDataClient client
+@implements IDisposable
+
+<PageTitle>Items</PageTitle>
+
+<style>
+    .foldercontent{
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        height:100vh;
+    }
+    .foldercontent-folders, .foldercontent-items {
+        display: flex;
+        margin-top: 2em;
+        margin-left: 2em;
+    }
+
+    .foldercontent-items {
+        display: flex;
+        flex-direction: column;
+        overflow-y: scroll;
+    }
+
+    .card {
+        margin-left: 2em;
+    }
+
+        .card:hover {
+            border: 1px solid black;
+            cursor: pointer;
+        }
+</style>
+<FileExplorer_Component></FileExplorer_Component>
+<div class="d-flex flex-column w-100" style="background-color: #22262f;">
+    <div class="pathbar bg-dark text-white">@Appstate.FilePath</div>
+    @if (showItem)
+    {
+        <Item_Form_Component></Item_Form_Component>
+    }
+    @if (showFolder)
+    {
+        <div class="foldercontent">
+            <div class="foldercontent-folders">
+                @foreach (var folder in Appstate.ChildFolders)
+                {
+                    <div class="card" style="width: 18rem;" @onclick="()=>{Appstate.SetActiveFolder(folder);}">
+                        <div class="card-body">
+                            <h5 class="card-title">@folder.Name</h5>
+                            <p class="card-text">Items: @folder.Items.Count</p>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="foldercontent-items">
+                @foreach (var item in Appstate.Items)
+                {
+                    <div @onclick="()=>Appstate.SetActiveItem(item,Appstate.FilePath)">
+                        <Item_List_Component Item="item"></Item_List_Component>
+                    </div>
+
+                }
+            </div>
+
+        </div>
+
+
+    }
+</div>
+
+
+@code {
+    public bool showItem { get; set; } = false;
+    public bool showFolder { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Appstate.OnchangeItem += setItem;
+        Appstate.OnchangeFolder += setFolder;
+        Appstate.OnChangePath += StateHasChanged;
+
+        showItem = Appstate.showItem;
+        showFolder = Appstate.showFolder;
+
+    }
+
+    private void setItem()
+    {
+        showFolder = false;
+        Appstate.showFolder = false;
+        showItem = true;
+        Appstate.showItem = true;
+
+        StateHasChanged();
+    }
+    private void setFolder()
+    {
+        showItem = false;
+        Appstate.showItem = false;
+        showFolder = true;
+        Appstate.showFolder = true;
+        StateHasChanged();
+
+
+    }
+
+
+    public void Dispose()
+    {
+        Appstate.OnchangeItem -= setItem;
+        Appstate.OnchangeFolder -= setFolder;
+        Appstate.OnChangePath -= StateHasChanged;
+    }
+
+
+
+}

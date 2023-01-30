@@ -1,0 +1,79 @@
+﻿@using BlazorApp1.Client.Authentication
+@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Services
+@using System.Net
+@inject HttpClient httpclient
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+@page "/login"
+
+
+<PageTitle>Login</PageTitle>
+
+<style>
+    .login_container{
+        display: flex;
+        justify-content: center;
+        align-items:center;
+        width: 100vw;
+        height: 100vh;
+        background-color:#070917;
+        color:white;
+    }
+    .login_form{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items:center;
+        background-color:#22262f;
+        height: 25em;
+        width: 20em;
+        border-radius: 1em;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        border: 2px groove grey;
+    }
+    .login_input{
+        margin-top: 1.5em;
+        border-radius: 0.5em;
+    }
+</style>
+
+
+<div class="login_container">
+    <form class="login_form">
+        <h3>Inventory Management</h3>
+        <h4>Login</h4>
+        <div>
+            <input class="login_input" @bind="Loginrequest.Username" placeholder="Username" type="text" />
+        </div>
+
+        <div>
+            <input class="login_input" @bind="Loginrequest.Password" placeholder="Password" type="password" />
+        </div>
+        <button class="login_input" @onclick="()=>Authenticate()" @onclick:preventDefault="true">Login</button>
+
+    </form>
+</div>
+
+
+@code {
+    private LoginRequest Loginrequest = new LoginRequest();
+
+    private async Task Authenticate()
+    {
+        var loginResponse = await httpclient.PostAsJsonAsync<LoginRequest>("/api/login/", Loginrequest);
+
+        if (loginResponse.IsSuccessStatusCode)
+        {
+            var userSession = await loginResponse.Content.ReadFromJsonAsync<UserSessionModel>();
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(userSession);
+        }
+        else if (loginResponse.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            Console.WriteLine("INVALID USERNAME OR PASSWORD");
+            
+        }
+
+    }
+}

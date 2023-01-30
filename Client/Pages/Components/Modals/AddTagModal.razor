@@ -1,0 +1,98 @@
+﻿@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Services
+@inject IAppStateService Appstate
+<div class="modal" style="display:block; color:black;" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add new Tag:</h5>
+                <button @onclick="InvokeToggleModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="false">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="inputItemName" class="form-label">Tag name:</label>
+                        <div class="d-flex">
+                            <input @bind="NewTag.Name" type="text" class="form-control" id="inputItemName" aria-describedby="inputItemName" />
+                            <button @onclick="()=>{CreateTag();}" type="button" class="btn btn-primary">Create New Tag</button>
+                        </div>
+
+                    </div>
+                    <ul>
+                        @foreach (var tag in AllTags)
+                        {
+                            <li class="d-flex justify-content-between">
+                                @tag.Name
+                                @if (CurrentItem.Tags.Any(x => x.Id == tag.Id))
+                                {
+                                    <button @onclick="()=>RemoveTag(CurrentItem.Tags.Find(x => x.Id == tag.Id))" @onclick:preventDefault="true">Remove tag</button>
+                                }
+                                else
+                                {
+                                    <button @onclick="()=>AddTag(tag)" @onclick:preventDefault="true">Add tag</button>
+                                }
+
+                            </li>
+                        }
+                    </ul>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button @onclick="InvokeToggleModal" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Action toggleModal { get; set; }
+    [Parameter]
+    public Item CurrentItem { get; set; }
+    private ItemTag NewTag { get; set; } = new ItemTag();
+    private List<ItemTag> AllTags = new List<ItemTag>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllTags = await Appstate.GetAllTags();
+
+        for (var i = 0; i < AllTags.Count; i++)
+        {
+            foreach (var tag in CurrentItem.Tags)
+            {
+                if (tag.Id == AllTags[i].Id)
+                {
+                    Console.WriteLine(tag.Name);
+                }
+            }
+        }
+
+    }
+    private void InvokeToggleModal()
+    {
+        toggleModal?.Invoke();
+    }
+
+    private async void CreateTag()
+    {
+        if (NewTag.Name != null)
+        {
+            var result = await Appstate.CreateTag(NewTag);
+            AllTags = await Appstate.GetAllTags();
+            StateHasChanged();
+        }
+
+    }
+
+    private void AddTag(ItemTag tag)
+    {
+        CurrentItem.Tags.Add(tag);
+    }
+    private void RemoveTag(ItemTag tag)
+    {
+        CurrentItem.Tags.Remove(tag);
+    }
+
+
+}

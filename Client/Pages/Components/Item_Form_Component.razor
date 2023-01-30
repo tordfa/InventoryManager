@@ -1,0 +1,117 @@
+﻿@using BlazorApp1.Shared.Models
+@using BlazorApp1.Client.Services
+@inject IAppStateService AppState
+<style>
+    .itemcontainer {
+        display: flex;
+        width: 100%;
+        color: white;
+        justify-content: center;
+        margin-top:2em;
+        overflow-y: scroll;
+    }
+
+    form {
+        width: 60%;
+        ;
+    }
+
+    .items {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .itemcontainer input, textarea {
+        width: 100%;
+        border-radius: 1em;
+        border: 1px solid black;
+        margin-bottom: 1em;
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .itemimage {
+        width: 300px;
+        height: 300px;
+        margin-top: 3em;
+        margin-left: 2em;
+    }
+    .save_button{
+        color:white;
+        border-radius: 1em;
+        background-color: #070917;
+    }
+    .save_button:hover{
+        background-color:grey;
+    }
+</style>
+
+<div class="itemcontainer">
+    <form>
+        <button class="save_button" @onclick="()=>{AppState.UpdateItem(CurrentItem);}" @onclick:preventDefault="true">Save changes</button>
+        <div>
+            <label>Name:</label>
+            <input @bind="CurrentItem.Name" type="text" />
+        </div>
+        <div class="items">
+            <div>
+                <label>Quantity:</label>
+                <input @bind="CurrentItem.Quantity" type="number" />
+            </div>
+            <div>
+                <label>Min Level:</label>
+                <input @bind="CurrentItem.MinimumQuantity" type="number" />
+            </div>
+        </div>
+        <div class="items">
+            <div>
+                <label>Price:</label>
+                <input @bind="CurrentItem.Price" type="text" />
+            </div>
+            <div>
+                <label>Total Price:</label>
+                <input type="text" readonly />
+            </div>
+        </div>
+
+        <div>
+            <label>Tags:</label>
+            <Tags_Component CurrentItem="CurrentItem"></Tags_Component>
+        </div>
+        <div>
+            <label>Notes:</label>
+            <textarea rows="7"></textarea>
+        </div>
+        <div>
+            <label>Serial Number:</label>
+            <input @bind="CurrentItem.SerialNumber" type="text" />
+        </div>
+        <div>
+            <label>Product Details:</label>
+            <input @bind="CurrentItem.Description" type="text" />
+        </div>
+        <div>
+            <label>Purchased On:</label>
+            <input type="date" />
+        </div>
+    </form>
+    <img class="itemimage">
+</div>
+@code {
+    private Item CurrentItem { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppState.OnchangeItem += () => 
+        { 
+            StateHasChanged(); 
+            CurrentItem = AppState.ActiveItem;
+        
+        };
+        CurrentItem = AppState.ActiveItem;
+    }
+
+
+}

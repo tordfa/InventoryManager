@@ -1,0 +1,18 @@
+﻿@page "/"
+@using BlazorApp1.Client.Authentication
+@using BlazorApp1.Client.Pages.Components.Dashboard
+@using BlazorApp1.Client.Services
+@using System.Net.Http.Headers
+@using BlazorApp1.Shared.Models
+@inject IAppStateService fileservice
+@inject HttpClient httpclient
+@inject AuthenticationStateProvider authenticationStateProvider
+<PageTitle>Dashboard</PageTitle>
+
+<Dashboard_Stock_Component></Dashboard_Stock_Component>
+
+
+@code {
+
+
+}
